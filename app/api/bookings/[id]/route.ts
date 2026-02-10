@@ -18,12 +18,14 @@ export async function GET(
     const bookingId = id
     
     const bookingService = getBookingService()
-    const booking = await bookingService.getBookingById(bookingId, userId)
+    const booking = await bookingService.getBookingById(bookingId)
     
     if (!booking) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404, headers: corsHeaders() })
     }
-    
+    if (booking.userId !== userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: corsHeaders() })
+    }
     return NextResponse.json(booking, { headers: corsHeaders() })
   } catch (error) {
     const errorResponse = handleError(error)
